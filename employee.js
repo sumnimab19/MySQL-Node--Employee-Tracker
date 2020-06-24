@@ -80,13 +80,21 @@ function allEmployeeSearch(){
 
 
 function employeeByDeptSearch(){
-    inquirer
-    .prompt({
-      name: "department",
-      type: "input",
-      message: "Which department would you like to search?",
-    })
+  let deptList = [];
+  const query = "SELECT dept_name FROM department";
+  connection.query (query, (err,res) => {
+  if(err) throw err;
+  for (let i = 0; i < res.length; i++){
+    deptList.push(res[i].dept_name)
+  }   
 
+  inquirer
+  .prompt({
+    name: "department",
+    type: "list",
+    message: "Which department would you like to search?",
+    choices: deptList
+  })
     .then(function(answer) {
         const query = `SELECT  e.id, first_name, last_name, title, dept_name, salary, manager FROM employees e JOIN roles r ON (r.id = e.role_id) JOIN department d ON (r.department_id=d.id) JOIN manager m ON (e.role_id = m.id)
         WHERE ?`;            
@@ -95,17 +103,27 @@ function employeeByDeptSearch(){
             console.table(res);
             start();
         });
+      });
     }
 )}
    
 
 function employeeByManagerSearch(){
-    inquirer
-    .prompt({
-      name: "manager",
-      type: "input",
-      message: "Which manager would you like to search?",
-    })
+  let managerList = [];
+  const query = "SELECT manager FROM manager";
+  connection.query (query, (err,res) => {
+  if(err) throw err;
+  for (let i = 0; i < res.length; i++){
+    managerList.push(res[i].manager)
+  }   
+
+  inquirer
+  .prompt({
+    name: "manager",
+    type: "list",
+    message: "Which employee would you like to search?",
+    choices: managerList
+  })
     .then(function(answer) {
         const query = `SELECT  e.id, first_name, last_name, title, dept_name, salary, manager FROM employees e JOIN roles r ON (r.id = e.role_id) JOIN department d ON (r.department_id=d.id) JOIN manager m ON (e.role_id = m.id)
         WHERE ?`;  
@@ -115,6 +133,7 @@ function employeeByManagerSearch(){
             start();
         });
     });
+  });
 }
             
 function addEmployee(){
@@ -181,8 +200,6 @@ function addEmployee(){
 
 
 function removeEmployee() {
-    // NEED TO WORK ON THIS FUNCTION
-
   let empList = [];
     const query = "SELECT first_name FROM employees";
     connection.query (query, (err,res) => {
@@ -191,7 +208,6 @@ function removeEmployee() {
       empList.push(res[i].first_name)
     }   
 
-  console.log(empList)
     inquirer
     .prompt({
       name: "firstname",
