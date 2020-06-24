@@ -138,48 +138,63 @@ function employeeByManagerSearch(){
             
 function addEmployee(){
         // NEED TO WORK ON THIS FUNCTION
+        let roleList = [];
+        const query = "SELECT title FROM roles";
+        connection.query (query, (err,res) => {
+        if(err) throw err;
+        for (let i = 0; i < res.length; i++){
+          roleList.push(res[i].title)
+        }   
+
+        let managerList = [];
+        const query = "SELECT manager FROM manager";
+        connection.query (query, (err,res) => {
+        if(err) throw err;
+        for (let i = 0; i < res.length; i++){
+          managerList.push(res[i].manager)
+        }   
 
     inquirer.prompt([
         {
+          name: "first_name",
           type: "input",
-          name: "firstname",
           message: "What is the employee's first name?"
         },
         {
+            name: "last_name",
             type: "input",
-            name: "lastname",
             message: "What is the employee's last name?"
         },
         {
-            type: "rawlist",
             name: "role",
+            type: "list",
             message: "What is the employee's role?",
-            choices: [
-                "Sales Lead",
-                "Lead Engineer",
-                "Software Engineer",
-                "Account Manager",
-                "Accountant",
-                "Legal Team Lead"
-              ]
+            choices: roleList
         },
         {
-          type: "rawlist",
           message: "Who is employee's manager?",
+          type: "rawlist",
           name: "manager",
-          choices: [
-              "a",
-              "b"
-          ]
+          choices: managerList
         }
       ]).then(function(answer) {
         console.log("Adding a new employee...\n");
         const query = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?)`;
+        /* */
+        // let roleID;
+        // const query = `SELECT id FROM role WHERE ${answer.role_id} = ?`;
+        // connection.query (query, (err,res) => {
+        // if(err) throw err;
+        //   roleID = (res.role_id);})
+        /* */
+        
         let empList = [
-            answer.firstname,
-            answer.lastname,
-            answer.role,
-            answer.manager
+            answer.first_name,
+            answer.last_name,
+            // answer.role,
+            3,
+            // answer.manager
+            1
         ];
 
         // execute the insert statment
@@ -187,15 +202,17 @@ function addEmployee(){
         if (err) throw err;
             console.log(`Added Employee's ${answer.firstname} ${answer.lastname} to the database`);
         });
-//         // INSERT INTO employees (first_name, last_name, role_id, manager_id)
-//         // VALUES ("Daton","Noah", 1,1);
-//         connection.query (query, {firstname:answer.first_name, lastname:answer.last_name, role:answer.role_id, manager_id: answer.manager_id}, (err,res) => {
-//             if(err) throw err;
-//             // console.log(Added Employee's First Name + Employee's Last Name to the database)
-//             console.table(res);
-//             start();
-//     });
+        // INSERT INTO employees (first_name, last_name, role_id, manager_id)
+        // VALUES ("Daton","Noah", 1,1);
+        // connection.query (query, {firstname:answer.first_name, lastname:answer.last_name, role:answer.role_id, manager_id: answer.manager_id}, (err,res) => {
+        //     if(err) throw err;
+        //     // console.log(Added Employee's First Name + Employee's Last Name to the database)
+            // console.table(res);
+            start();
+    // });
 });
+        })
+      })
 }
 
 
