@@ -28,7 +28,8 @@ function start(){
             "Remove Employee",
             "Update Employee Role",
             "Update Employee Manager",
-            "View All Roles"
+            "View All Roles",
+            "Exit"
         ]
     })
     .then(function(answer) {
@@ -131,7 +132,7 @@ function addEmployee(){
             message: "What is the employee's last name?"
         },
         {
-            type: "input",
+            type: "rawlist",
             name: "role",
             message: "What is the employee's role?",
             choices: [
@@ -144,7 +145,7 @@ function addEmployee(){
               ]
         },
         {
-          type: "list",
+          type: "rawlist",
           message: "Who is employee's manager?",
           name: "manager",
           choices: [
@@ -154,21 +155,19 @@ function addEmployee(){
         }
       ]).then(function(answer) {
         console.log("Adding a new employee...\n");
-        // const query = "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?)";
-        // let empList = [
-        //     answer.firstname,
-        //     answer.lastname,
-        //     3,
-        //     4
-        //     // answer.role,
-        //     // answer.manager
-        // ];
+        const query = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?)`;
+        let empList = [
+            answer.firstname,
+            answer.lastname,
+            answer.role,
+            answer.manager
+        ];
 
         // execute the insert statment
-//         connection.query(query, [(empList)], (err, res) => {
-//         if (err) throw err;
-  
-//         });
+        connection.query(query, [empList], (err, res) => {
+        if (err) throw err;
+            console.log(`Added Employee's ${answer.firstname} ${answer.lastname} to the database`);
+        });
 //         // INSERT INTO employees (first_name, last_name, role_id, manager_id)
 //         // VALUES ("Daton","Noah", 1,1);
 //         connection.query (query, {firstname:answer.first_name, lastname:answer.last_name, role:answer.role_id, manager_id: answer.manager_id}, (err,res) => {
@@ -183,31 +182,35 @@ function addEmployee(){
 
 function removeEmployee() {
     // NEED TO WORK ON THIS FUNCTION
+
+  let empList = [];
     const query = "SELECT first_name FROM employees";
     connection.query (query, (err,res) => {
     if(err) throw err;
-    let empList = res;
-    console.log(empList);
-    })
+    for (let i = 0; i < res.length; i++){
+      empList.push(res[i].first_name)
+    }   
+
+  console.log(empList)
     inquirer
     .prompt({
-      name: "employee",
+      name: "firstname",
       type: "list",
       message: "Which employee would you like to remove?",
       choices: empList
     })
-
+  
     .then(function(answer) {
-
-        // list the first name of employees so selection can be made to delete it
-        
-      const query = "DELETE * FROM employees ?";
-      connection.query(query, { employee: answer.first_name }, function(err, res) {
+      console.log(answer)
+      const query = "DELETE FROM employees WHERE ?";
+      connection.query(query, {first_name:answer.firstname}, (err, res) => {
+        if (err) throw err;
         console.log("Removed employee from database");
-        console.table(res);   
+        // console.table(res);   
         start();
       });
     });
+  });
 }
 
 function updateEmployee() {
@@ -253,6 +256,7 @@ function viewAllRoles() {
     connection.query (query, (err,res) => {
         if(err) throw err;
         console.table(res);
+        start();
     });
 }
 
