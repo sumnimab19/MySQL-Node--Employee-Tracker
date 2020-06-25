@@ -27,8 +27,22 @@ VALUES ("Engineer", 90000, 3);
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES ("Daton","Noah", 1,1);
 
-NSERT INTO employees (first_name, last_name, role_id, manager_id)
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES ("Sam","Smith", 2,2);
 
-NSERT INTO employees (first_name, last_name, role_id, manager_id)
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES ("Andi","Barton",3,3);
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ("Max","Deeter", 4,4);
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ("Nick","Tan", 5,5);
+
+INSERT INTO manager (manager)
+VALUES ("Ryan Skill");
+INSERT INTO manager (manager)
+VALUES ("Hou Smith");
+INSERT INTO manager (manager)
+VALUES ("");
+

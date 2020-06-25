@@ -27,7 +27,7 @@ function start(){
             "Add Employee",
             "Remove Employee",
             "Update Employee Role",
-            "Update Employee Manager",
+            // "Update Employee Manager",
             "View All Roles",
             "Exit"
         ]
@@ -55,15 +55,19 @@ function start(){
           break;
         
         case "Update Employee Role":
-            updateEmployee();
+            updateEmployeeRole();
             break;
 
-        case "Update Employee Manager":
-            updateEmpManager();
-            break;
+        // case "Update Employee Manager":
+        //     updateEmpManager();
+        //     break;
 
         case "View All Roles":
             viewAllRoles();
+            break;
+        
+        case "Exit":
+            connection.end();
             break;
         }
     });
@@ -137,7 +141,6 @@ function employeeByManagerSearch(){
 }
             
 function addEmployee(){
-        // NEED TO WORK ON THIS FUNCTION
         let roleList = [];
         const query = "SELECT title FROM roles";
         connection.query (query, (err,res) => {
@@ -178,41 +181,37 @@ function addEmployee(){
           choices: managerList
         }
       ]).then(function(answer) {
+        let roleID;
+        connection.query("SELECT * FROM roles WHERE title = '" + answer.role + "'", function (err, res) {
+        if(err) throw err;
+        roleID = res[0].id;
+
+        let managerID;
+        connection.query("SELECT * FROM manager WHERE manager = '" + answer.manager + "'", function (err, res) {
+        if(err) throw err;
+        managerID = res[0].id;
+
         console.log("Adding a new employee...\n");
         const query = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?)`;
-        /* */
-        // let roleID;
-        // const query = `SELECT id FROM role WHERE ${answer.role_id} = ?`;
-        // connection.query (query, (err,res) => {
-        // if(err) throw err;
-        //   roleID = (res.role_id);})
-        /* */
         
         let empList = [
             answer.first_name,
             answer.last_name,
-            // answer.role,
-            3,
-            // answer.manager
-            1
+            roleID,
+            managerID
         ];
 
-        // execute the insert statment
         connection.query(query, [empList], (err, res) => {
         if (err) throw err;
-            console.log(`Added Employee's ${answer.firstname} ${answer.lastname} to the database`);
-        });
-        // INSERT INTO employees (first_name, last_name, role_id, manager_id)
-        // VALUES ("Daton","Noah", 1,1);
-        // connection.query (query, {firstname:answer.first_name, lastname:answer.last_name, role:answer.role_id, manager_id: answer.manager_id}, (err,res) => {
-        //     if(err) throw err;
-        //     // console.log(Added Employee's First Name + Employee's Last Name to the database)
-            // console.table(res);
             start();
-    // });
-});
-        })
-      })
+        });
+           
+      });
+    });
+  });
+
+  });
+  });
 }
 
 
@@ -239,50 +238,70 @@ function removeEmployee() {
       connection.query(query, {first_name:answer.firstname}, (err, res) => {
         if (err) throw err;
         console.log("Removed employee from database");
-        // console.table(res);   
         start();
       });
     });
   });
 }
 
-function updateEmployee() {
-        // NEED TO WORK ON THIS FUNCTION
 
-//     console.log("Updating all Rocky Road quantities...\n");
-//   var query = connection.query(
-//     "UPDATE products SET ? WHERE ?",
-//     [
-//       {
-//         quantity: 100
-//       },
-//       {
-//         flavor: "Rocky Road"
-//       }
-//     ],
-//     function(err, res) {
-//       if (err) throw err;
-//       console.log(res.affectedRows + " products updated!\n");
-//       // Call deleteProduct AFTER the UPDATE completes
-//       deleteProduct();
-//     }
-//   );
 
-  // logs the actual query being run
-//   console.log(query.sql);
-
+function updateEmployeeRole() {
+  connection.query("SELECT department.dept_name, department.id FROM department", (err, res) => {
+    let deptName = [];
+    let deptId = [];
+    for (let i = 0; i < res.length; i++) {
+      deptName.push(res[i].dept_name);
+      deptId.push(res[i].id);
+    }
+    inquirer
+        .prompt([
+            {
+                name: "role",
+                type: "input",
+                message: "What Role would you like to add?"
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "What is the salary for this role?"
+            },
+            {
+                name: "department",
+                type: "list",
+                message: "What is the Department?",
+                choices: deptName
+            }
+        ])
+        .then(function (answer) {
+            let newDept = answer.department;
+            let deptIndex = deptName.indexOf(newDept);
+            connection.query("INSERT INTO roles SET ?",
+                {
+                    title: answer.role,
+                    salary: answer.salary,
+                    department_id: deptId[deptIndex]
+                },
+                err=> {
+                    if (err) throw err;
+                    console.log("New Role has been added.");
+                    start()
+                });
+        });
+});
 }
 
-function updateEmpManager() {
-  // NEED TO WORK ON THIS FUNCTION
 
-    // Which employee's manager do you want to update?
-    // List of names
-    // Which employee do you want to set as manager for the selected employee?
-    // List of names
-    // console.log("Updated employee's manager")
+// function updateEmpManager() {
+//   // NEED TO WORK ON THIS FUNCTION
 
-}
+//     // Which employee's manager do you want to update?
+//     // List of names
+//     // Which employee do you want to set as manager for the selected employee?
+//     // List of names
+//     // console.log("Updated employee's manager")
+
+// }
 
 function viewAllRoles() {
     const query = "SELECT id, title FROM roles ORDER BY id";
