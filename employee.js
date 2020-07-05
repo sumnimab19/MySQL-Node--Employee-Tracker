@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password:"MeroSQL@20",
+    password:"",
     database:"employee_DB"
 });
 
@@ -27,7 +27,6 @@ function start(){
             "Add Employee",
             "Remove Employee",
             "Update Employee Role",
-            // "Update Employee Manager",
             "View All Roles",
             "Exit"
         ]
@@ -58,9 +57,6 @@ function start(){
             updateEmployeeRole();
             break;
 
-        // case "Update Employee Manager":
-        //     updateEmpManager();
-        //     break;
 
         case "View All Roles":
             viewAllRoles();
@@ -291,17 +287,6 @@ function updateEmployeeRole() {
 });
 }
 
-
-// function updateEmpManager() {
-//   // NEED TO WORK ON THIS FUNCTION
-
-//     // Which employee's manager do you want to update?
-//     // List of names
-//     // Which employee do you want to set as manager for the selected employee?
-//     // List of names
-//     // console.log("Updated employee's manager")
-
-// }
 
 function viewAllRoles() {
     const query = "SELECT id, title FROM roles ORDER BY id";
